@@ -25,6 +25,7 @@ export async function initWaku(setter: (waku: Waku) => void) {
 export async function retrieveStoreMessages(
   waku: Waku,
   topic: string,
+  balanceMap: any,
   setArchivedMessages: (value: Message[]) => void
 ): Promise<number> {
   const callback = (wakuMessages: WakuMessage[]): void => {
@@ -33,6 +34,9 @@ export async function retrieveStoreMessages(
       .map((wakuMsg) => Message.fromWakuMessage(wakuMsg))
       .forEach((message) => {
         if (message) {
+          if (message.address) {
+            message.balance = balanceMap[message.address];
+          }
           messages.push(message);
         }
       });

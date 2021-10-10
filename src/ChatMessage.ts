@@ -15,7 +15,11 @@ export class ChatMessage {
   /**
    * Create Chat Message with a utf-8 string as payload.
    */
-  static fromUtf8String(nick: string, text: string): ChatMessage {
+  static fromUtf8String(
+    nick: string,
+    text: string,
+    address: string = ''
+  ): ChatMessage {
     const timestampNumber = Math.floor(new Date().valueOf() / 1000);
     const payload = Buffer.from(text, 'utf-8');
 
@@ -23,13 +27,19 @@ export class ChatMessage {
       timestamp: timestampNumber,
       nick,
       payload,
+      address,
       zoraId: '',
       nftContract: '',
       livepeer: '',
     });
   }
 
-  static fromZora(nick: string, zoraId: string, nftContract = ''): ChatMessage {
+  static fromZora(
+    nick: string,
+    zoraId: string,
+    address: string = '',
+    nftContract = ''
+  ): ChatMessage {
     const timestampNumber = Math.floor(new Date().valueOf() / 1000);
     const payload = Buffer.from('', 'utf-8');
 
@@ -37,13 +47,18 @@ export class ChatMessage {
       timestamp: timestampNumber,
       nick,
       payload,
+      address,
       zoraId,
       nftContract,
       livepeer: '',
     });
   }
 
-  static fromLivepeer(nick: string, streamId: string): ChatMessage {
+  static fromLivepeer(
+    nick: string,
+    streamId: string,
+    address: string = ''
+  ): ChatMessage {
     const timestampNumber = Math.floor(new Date().valueOf() / 1000);
     const payload = Buffer.from('', 'utf-8');
 
@@ -51,6 +66,7 @@ export class ChatMessage {
       timestamp: timestampNumber,
       nick,
       payload,
+      address,
       zoraId: '',
       nftContract: '',
       livepeer: streamId,
@@ -92,6 +108,10 @@ export class ChatMessage {
 
   get livepeer(): string {
     return this.proto.livepeer;
+  }
+
+  get address(): string {
+    return this.proto.address;
   }
 
   get payloadAsUtf8(): string {

@@ -16,7 +16,12 @@ interface Props {
 
 export default function Room(props: Props) {
   const { waku, chatTopic } = useWaku();
-  const { web3Modal, loadWeb3Modal, logoutOfWeb3Modal } = useWeb3Context();
+  const {
+    web3Modal,
+    loadWeb3Modal,
+    logoutOfWeb3Modal,
+    address,
+  } = useWeb3Context();
   const { nick, commandHandler } = props;
 
   async function handleMessage(message: string) {
@@ -27,7 +32,7 @@ export default function Room(props: Props) {
     if (message.startsWith('/')) {
       commandHandler(message);
     } else {
-      const chatMessage = ChatMessage.fromUtf8String(nick, message);
+      const chatMessage = ChatMessage.fromUtf8String(nick, message, address);
       return sendMessage(waku, chatMessage, chatTopic);
     }
   }

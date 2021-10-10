@@ -7,4 +7,5 @@ message ChatMessage {
   string zoraId = 4;
   string nftContract = 5;
   string livepeer = 6;
+  string address = 7;
 }

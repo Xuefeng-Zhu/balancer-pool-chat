@@ -118,6 +118,7 @@ function connections(waku: Waku | undefined): string[] {
 function handleZora(
   waku: Waku | undefined,
   nick: string,
+  address: string,
   chatTopic: string,
   zoraId: string | undefined
 ): string[] {
@@ -129,7 +130,7 @@ function handleZora(
     return ['Please enter zoraId'];
   }
 
-  const chatMessage = ChatMessage.fromZora(nick, zoraId);
+  const chatMessage = ChatMessage.fromZora(nick, zoraId, address);
   sendMessage(waku, chatMessage, chatTopic);
   return [];
 }
@@ -137,6 +138,7 @@ function handleZora(
 function handleLivepeer(
   waku: Waku | undefined,
   nick: string,
+  address: string,
   chatTopic: string,
   livepeer: string | undefined
 ): string[] {
@@ -148,7 +150,7 @@ function handleLivepeer(
     return ['Please enter livepeer stream id'];
   }
 
-  const chatMessage = ChatMessage.fromLivepeer(nick, livepeer);
+  const chatMessage = ChatMessage.fromLivepeer(nick, livepeer, address);
   sendMessage(waku, chatMessage, chatTopic);
   return [];
 }
@@ -188,17 +190,23 @@ export default async function handleCommand(
       response.push(await getUmbrellaData(args[0]));
       break;
     case '/zora':
-      handleZora(waku, nick, chatTopic, args.shift()).map((str) =>
+      handleZora(waku, nick, address, chatTopic, args.shift()).map((str) =>
         response.push(str)
       );
       break;
     case '/livepeer':
-      handleLivepeer(waku, nick, chatTopic, args.shift()).map((str) =>
+      handleLivepeer(waku, nick, address, chatTopic, args.shift()).map((str) =>
         response.push(str)
       );
       break;
     case '/nftport':
-      const results = await searchNft(waku, nick, chatTopic, args.shift());
+      const results = await searchNft(
+        waku,
+        nick,
+        address,
+        chatTopic,
+        args.shift()
+      );
       results.map((str) => response.push(str));
       break;
     case '/balances':

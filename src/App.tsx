@@ -3,9 +3,12 @@ import { Waku, WakuMessage } from 'js-waku';
 import { useHash } from 'react-use';
 import { generate } from 'server-name-generator';
 import { ThemeProvider } from '@livechat/ui-kit';
+import { useQuery, gql } from '@apollo/client';
+
 import { Message } from './Message';
 import handleCommand from './command';
 import Room from './components/Room';
+import PoolList from './components/PoolList';
 import { WakuContext } from './providers/WakuContext';
 import { useWeb3Context } from './providers/Web3ContextProvider';
 import { initWaku, retrieveStoreMessages, reduceMessages } from './utils/waku';
@@ -40,6 +43,32 @@ const themes = {
   },
 };
 
+const POOL_GQL = gql(`
+  query Pool($poolId: String!) {
+    pools(first: 1, where: {id: $poolId}) {
+      id
+      shares {
+        userAddress {
+          id
+        }
+        balance
+      }
+    }
+  }
+`);
+
+function getBalanceMap(poolData: any) {
+  const result: any = {};
+  if (!poolData) {
+    return result;
+  }
+
+  poolData.pools[0].shares.forEach((share: any) => {
+    result[share.userAddress.id] = parseInt(share.balance);
+  });
+  return result;
+}
+
 export default function App() {
   const [hash] = useHash();
   const { provider, address } = useWeb3Context();
@@ -55,7 +84,13 @@ export default function App() {
   ] = useState(false);
   const [poolId] = hash.slice(2).split('/');
   const chatTopic = `/pool-chat/${poolId}`;
+  const { loading: poolLoading, data: poolData } = useQuery(POOL_GQL, {
+    pollInterval: 2500,
+    variables: { poolId },
+  });
+  const balanceMap = getBalanceMap(poolData);
 
+  console.log(poolLoading, poolData);
   useEffect(() => {
     localStorage.setItem('nick', nick);
   }, [nick]);
@@ -75,6 +110,9 @@ export default function App() {
       console.log('Message received: ', wakuMsg);
       const msg = Message.fromWakuMessage(wakuMsg);
       if (msg) {
+        if (msg.address) {
+          msg.balance = balanceMap[msg.address];
+        }
         dispatchMessages([msg]);
       }
     };
@@ -95,12 +133,15 @@ export default function App() {
       console.log(`Retrieving archived messages}`);
 
       try {
-        retrieveStoreMessages(waku, chatTopic, dispatchMessages).then(
-          (length) => {
-            console.log(`Messages retrieved:`, length);
-            setHistoricalMessagesRetrieved(true);
-          }
-        );
+        retrieveStoreMessages(
+          waku,
+          chatTopic,
+          balanceMap,
+          dispatchMessages
+        ).then((length) => {
+          console.log(`Messages retrieved:`, length);
+          setHistoricalMessagesRetrieved(true);
+        });
       } catch (e) {
         console.log(`Error encountered when retrieving archived messages`, e);
       }
@@ -108,6 +149,10 @@ export default function App() {
 
     retrieveMessages();
   }, [waku, historicalMessagesRetrieved, chatTopic]);
+
+  if (!poolId) {
+    return <PoolList />;
+  }
 
   return (
     <div
@@ -130,7 +175,11 @@ export default function App() {
                 setNick
               );
               const commandMessages = response.map((msg) => {
-                return Message.fromUtf8String(command, msg);
+                const message = Message.fromUtf8String(command, msg, address);
+                if (message.address) {
+                  message.balance = balanceMap[message.address];
+                }
+                return message;
               });
               dispatchMessages(commandMessages);
             }}

@@ -6,9 +6,12 @@ export class Message {
   // WakuMessage timestamp
   public sentTimestamp: Date | undefined;
 
+  public balance: number;
+
   constructor(chatMessage: ChatMessage, sentTimestamp: Date | undefined) {
     this.chatMessage = chatMessage;
     this.sentTimestamp = sentTimestamp;
+    this.balance = 0;
   }
 
   static fromWakuMessage(wakuMsg: WakuMessage): Message | undefined {
@@ -29,9 +32,9 @@ export class Message {
     return;
   }
 
-  static fromUtf8String(nick: string, text: string): Message {
+  static fromUtf8String(nick: string, text: string, address: string): Message {
     const now = new Date();
-    return new Message(ChatMessage.fromUtf8String(nick, text), now);
+    return new Message(ChatMessage.fromUtf8String(nick, text, address), now);
   }
 
   get nick() {
@@ -56,5 +59,17 @@ export class Message {
 
   get livepeer() {
     return this.chatMessage.livepeer;
+  }
+
+  get address() {
+    return this.chatMessage.address;
+  }
+
+  get authorName() {
+    if (!this.address) {
+      return this.nick;
+    }
+
+    return `${this.nick} (${this.address}, Balance: ${this.balance || 0})`;
   }
 }

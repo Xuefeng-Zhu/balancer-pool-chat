@@ -26,7 +26,7 @@ function ChatMessage({ message }: { message: Message }) {
   useEffect(() => {
     if (!videoEl) return;
 
-    const player = videojs(videoEl, {
+    videojs(videoEl, {
       autoplay: true,
       controls: true,
       sources: [
@@ -38,9 +38,9 @@ function ChatMessage({ message }: { message: Message }) {
 
     // player.hlsQualitySelector();
 
-    player.on('error', () => {
-      player.src(`https://cdn.livepeer.com/hls/${message.livepeer}/index.m3u8`);
-    });
+    // player.on('error', () => {
+    //   player.src(`https://cdn.livepeer.com/hls/${message.livepeer}/index.m3u8`);
+    // });
   }, [videoEl, message.livepeer]);
 
   if (message.livepeer) {
@@ -81,7 +81,7 @@ export default function ChatList(props: Props) {
             message.nick +
             message.payloadAsUtf8
       }
-      authorName={message.nick}
+      authorName={message.authorName}
       date={formatDisplayDate(message)}
     >
       <ChatMessage message={message} />

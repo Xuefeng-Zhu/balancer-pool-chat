@@ -10,6 +10,7 @@ const apiKey = '10519dad-ccaf-401e-b46a-b567405db6e7';
 export async function searchNft(
   waku: Waku | undefined,
   nick: string,
+  address: string,
   chatTopic: string,
   query: string | undefined
 ): Promise<string[]> {
@@ -36,6 +37,7 @@ export async function searchNft(
 
   const chatMessage = ChatMessage.fromZora(
     nick,
+    address,
     selectedResult.token_id,
     selectedResult.contract_address
   );
