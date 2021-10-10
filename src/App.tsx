@@ -124,6 +124,8 @@ export default function App() {
                 input,
                 waku,
                 provider,
+                nick,
+                chatTopic,
                 setNick
               );
               const commandMessages = response.map((msg) => {

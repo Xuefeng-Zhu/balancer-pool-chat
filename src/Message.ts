@@ -31,7 +31,7 @@ export class Message {
 
   static fromUtf8String(nick: string, text: string): Message {
     const now = new Date();
-    return new Message(ChatMessage.fromUtf8String(now, nick, text), now);
+    return new Message(ChatMessage.fromUtf8String(nick, text), now);
   }
 
   get nick() {
@@ -44,5 +44,9 @@ export class Message {
 
   get payloadAsUtf8() {
     return this.chatMessage.payloadAsUtf8;
+  }
+
+  get zoraId() {
+    return this.chatMessage.zoraId;
   }
 }

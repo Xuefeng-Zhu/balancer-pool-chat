@@ -1,4 +1,3 @@
-import { WakuMessage } from 'js-waku';
 import { Button } from 'antd';
 import ChatList from './ChatList';
 import MessageInput from './MessageInput';
@@ -7,6 +6,7 @@ import { TitleBar } from '@livechat/ui-kit';
 import { Message } from '../Message';
 import { ChatMessage } from '../ChatMessage';
 import { useWeb3Context } from '../providers/Web3ContextProvider';
+import { sendMessage } from '../utils/waku';
 
 interface Props {
   messages: Message[];
@@ -27,16 +27,8 @@ export default function Room(props: Props) {
     if (message.startsWith('/')) {
       commandHandler(message);
     } else {
-      const timestamp = new Date();
-      const chatMessage = ChatMessage.fromUtf8String(timestamp, nick, message);
-      const wakuMsg = await WakuMessage.fromBytes(
-        chatMessage.encode(),
-        chatTopic,
-        {
-          timestamp,
-        }
-      );
-      return waku.relay.send(wakuMsg);
+      const chatMessage = ChatMessage.fromUtf8String(nick, message);
+      return sendMessage(waku, chatMessage, chatTopic);
     }
   }
 

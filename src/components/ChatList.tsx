@@ -15,8 +15,8 @@ memo(ChatList);
 
 export default function ChatList(props: Props) {
   function renderMessage(message: Message) {
-    if (message.payloadAsUtf8 === '1') {
-      return <NFTPreview id="3366" showBids={false} />;
+    if (message.zoraId) {
+      return <NFTPreview id={message.zoraId} showBids={false} />;
     }
 
     return <MessageText>{message.payloadAsUtf8}</MessageText>;

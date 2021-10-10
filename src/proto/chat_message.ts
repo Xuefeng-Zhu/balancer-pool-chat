@@ -1,16 +1,17 @@
 /* eslint-disable */
-import Long from 'long';
-import _m0 from 'protobufjs/minimal';
+import Long from "long";
+import _m0 from "protobufjs/minimal";
 
-export const protobufPackage = '';
+export const protobufPackage = "";
 
 export interface ChatMessage {
   timestamp: number;
   nick: string;
   payload: Uint8Array;
+  zoraId: string;
 }
 
-const baseChatMessage: object = { timestamp: 0, nick: '' };
+const baseChatMessage: object = { timestamp: 0, nick: "", zoraId: "" };
 
 export const ChatMessage = {
   encode(
@@ -20,11 +21,14 @@ export const ChatMessage = {
     if (message.timestamp !== 0) {
       writer.uint32(8).uint64(message.timestamp);
     }
-    if (message.nick !== '') {
+    if (message.nick !== "") {
       writer.uint32(18).string(message.nick);
     }
     if (message.payload.length !== 0) {
       writer.uint32(26).bytes(message.payload);
+    }
+    if (message.zoraId !== "") {
+      writer.uint32(34).string(message.zoraId);
     }
     return writer;
   },
@@ -46,6 +50,9 @@ export const ChatMessage = {
         case 3:
           message.payload = reader.bytes();
           break;
+        case 4:
+          message.zoraId = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -65,10 +72,15 @@ export const ChatMessage = {
     if (object.nick !== undefined && object.nick !== null) {
       message.nick = String(object.nick);
     } else {
-      message.nick = '';
+      message.nick = "";
     }
     if (object.payload !== undefined && object.payload !== null) {
       message.payload = bytesFromBase64(object.payload);
+    }
+    if (object.zoraId !== undefined && object.zoraId !== null) {
+      message.zoraId = String(object.zoraId);
+    } else {
+      message.zoraId = "";
     }
     return message;
   },
@@ -81,6 +93,7 @@ export const ChatMessage = {
       (obj.payload = base64FromBytes(
         message.payload !== undefined ? message.payload : new Uint8Array()
       ));
+    message.zoraId !== undefined && (obj.zoraId = message.zoraId);
     return obj;
   },
 
@@ -94,12 +107,17 @@ export const ChatMessage = {
     if (object.nick !== undefined && object.nick !== null) {
       message.nick = object.nick;
     } else {
-      message.nick = '';
+      message.nick = "";
     }
     if (object.payload !== undefined && object.payload !== null) {
       message.payload = object.payload;
     } else {
       message.payload = new Uint8Array();
+    }
+    if (object.zoraId !== undefined && object.zoraId !== null) {
+      message.zoraId = object.zoraId;
+    } else {
+      message.zoraId = "";
     }
     return message;
   },
@@ -107,17 +125,18 @@ export const ChatMessage = {
 
 declare var self: any | undefined;
 declare var window: any | undefined;
+declare var global: any | undefined;
 var globalThis: any = (() => {
-  if (typeof globalThis !== 'undefined') return globalThis;
-  if (typeof self !== 'undefined') return self;
-  if (typeof window !== 'undefined') return window;
-  if (typeof global !== 'undefined') return global;
-  throw 'Unable to locate global object';
+  if (typeof globalThis !== "undefined") return globalThis;
+  if (typeof self !== "undefined") return self;
+  if (typeof window !== "undefined") return window;
+  if (typeof global !== "undefined") return global;
+  throw "Unable to locate global object";
 })();
 
 const atob: (b64: string) => string =
   globalThis.atob ||
-  ((b64) => globalThis.Buffer.from(b64, 'base64').toString('binary'));
+  ((b64) => globalThis.Buffer.from(b64, "base64").toString("binary"));
 function bytesFromBase64(b64: string): Uint8Array {
   const bin = atob(b64);
   const arr = new Uint8Array(bin.length);
@@ -129,13 +148,13 @@ function bytesFromBase64(b64: string): Uint8Array {
 
 const btoa: (bin: string) => string =
   globalThis.btoa ||
-  ((bin) => globalThis.Buffer.from(bin, 'binary').toString('base64'));
+  ((bin) => globalThis.Buffer.from(bin, "binary").toString("base64"));
 function base64FromBytes(arr: Uint8Array): string {
   const bin: string[] = [];
   for (const byte of arr) {
     bin.push(String.fromCharCode(byte));
   }
-  return btoa(bin.join(''));
+  return btoa(bin.join(""));
 }
 
 type Builtin =
@@ -158,7 +177,7 @@ export type DeepPartial<T> = T extends Builtin
 
 function longToNumber(long: Long): number {
   if (long.gt(Number.MAX_SAFE_INTEGER)) {
-    throw new globalThis.Error('Value is larger than Number.MAX_SAFE_INTEGER');
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
   }
   return long.toNumber();
 }

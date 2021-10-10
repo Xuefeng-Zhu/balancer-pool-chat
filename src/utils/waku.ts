@@ -1,5 +1,6 @@
 import { Direction, getBootstrapNodes, Waku, WakuMessage } from 'js-waku';
 import { Message } from '../Message';
+import { ChatMessage } from '../ChatMessage';
 
 export async function initWaku(setter: (waku: Waku) => void) {
   try {
@@ -60,6 +61,17 @@ export async function retrieveStoreMessages(
     console.log('Failed to retrieve messages', e);
     return 0;
   }
+}
+
+export async function sendMessage(
+  waku: Waku,
+  chatMessage: ChatMessage,
+  chatTopic: string
+) {
+  const wakuMsg = await WakuMessage.fromBytes(chatMessage.encode(), chatTopic, {
+    timestamp: new Date(),
+  });
+  return waku.relay.send(wakuMsg);
 }
 
 export function selectFleetEnv() {

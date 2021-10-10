@@ -3,7 +3,9 @@ import PeerId from 'peer-id';
 import { Waku } from 'js-waku';
 import { Provider } from '@ethersproject/providers';
 
+import { ChatMessage } from './ChatMessage';
 import { getUmbrellaData } from './utils/umbrella';
+import { sendMessage } from './utils/waku';
 
 function help(): string[] {
   return [
@@ -14,7 +16,7 @@ function help(): string[] {
   ];
 }
 
-function nick(
+function handleNick(
   nick: string | undefined,
   setNick: (nick: string) => void
 ): string[] {
@@ -107,10 +109,31 @@ function connections(waku: Waku | undefined): string[] {
   return response;
 }
 
+function handleZora(
+  waku: Waku | undefined,
+  nick: string,
+  chatTopic: string,
+  zoraId: string | undefined
+): string[] {
+  if (!waku) {
+    return ['Waku node is starting'];
+  }
+
+  if (!zoraId) {
+    return ['Invalid zoraId'];
+  }
+
+  const chatMessage = ChatMessage.fromZora(nick, zoraId);
+  sendMessage(waku, chatMessage, chatTopic);
+  return [];
+}
+
 export default async function handleCommand(
   input: string,
   waku: Waku | undefined,
   provider: Provider | undefined,
+  nick: string,
+  chatTopic: string,
   setNick: (nick: string) => void
 ): Promise<{ command: string; response: string[] }> {
   let response: string[] = [];
@@ -121,7 +144,7 @@ export default async function handleCommand(
       help().map((str) => response.push(str));
       break;
     case '/nick':
-      nick(args.shift(), setNick).map((str) => response.push(str));
+      handleNick(args.shift(), setNick).map((str) => response.push(str));
       break;
     case '/info':
       info(waku).map((str) => response.push(str));
@@ -137,6 +160,11 @@ export default async function handleCommand(
       break;
     case '/umbrella':
       response.push(await getUmbrellaData(args[0]));
+      break;
+    case '/zora':
+      handleZora(waku, nick, chatTopic, args.shift()).map((str) =>
+        response.push(str)
+      );
       break;
     default:
       response.push(`Unknown Command '${command}'`);

@@ -15,18 +15,27 @@ export class ChatMessage {
   /**
    * Create Chat Message with a utf-8 string as payload.
    */
-  static fromUtf8String(
-    timestamp: Date,
-    nick: string,
-    text: string
-  ): ChatMessage {
-    const timestampNumber = Math.floor(timestamp.valueOf() / 1000);
+  static fromUtf8String(nick: string, text: string): ChatMessage {
+    const timestampNumber = Math.floor(new Date().valueOf() / 1000);
     const payload = Buffer.from(text, 'utf-8');
 
     return new ChatMessage({
       timestamp: timestampNumber,
       nick,
       payload,
+      zoraId: '',
+    });
+  }
+
+  static fromZora(nick: string, zoraId: string): ChatMessage {
+    const timestampNumber = Math.floor(new Date().valueOf() / 1000);
+    const payload = Buffer.from('', 'utf-8');
+
+    return new ChatMessage({
+      timestamp: timestampNumber,
+      nick,
+      payload,
+      zoraId,
     });
   }
 
@@ -53,6 +62,10 @@ export class ChatMessage {
 
   get nick(): string {
     return this.proto.nick;
+  }
+
+  get zoraId(): string {
+    return this.proto.zoraId;
   }
 
   get payloadAsUtf8(): string {
