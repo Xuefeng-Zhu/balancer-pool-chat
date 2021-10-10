@@ -41,7 +41,7 @@ function ChatMessage({ message }: { message: Message }) {
     player.on('error', () => {
       player.src(`https://cdn.livepeer.com/hls/${message.livepeer}/index.m3u8`);
     });
-  }, []);
+  }, [videoEl, message.livepeer]);
 
   if (message.livepeer) {
     return (
