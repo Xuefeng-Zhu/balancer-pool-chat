@@ -4,8 +4,9 @@ import { Waku } from 'js-waku';
 import { Provider } from '@ethersproject/providers';
 
 import { ChatMessage } from './ChatMessage';
-import { getUmbrellaData } from './utils/umbrella';
 import { sendMessage } from './utils/waku';
+import { getUmbrellaData } from './utils/umbrella';
+import { getPortofolio } from './utils/covalent';
 
 function help(): string[] {
   return [
@@ -132,6 +133,7 @@ export default async function handleCommand(
   input: string,
   waku: Waku | undefined,
   provider: Provider | undefined,
+  address: string,
   nick: string,
   chatTopic: string,
   setNick: (nick: string) => void
@@ -165,6 +167,9 @@ export default async function handleCommand(
       handleZora(waku, nick, chatTopic, args.shift()).map((str) =>
         response.push(str)
       );
+      break;
+    case '/balances':
+      response.push(await getPortofolio(args[0] || address));
       break;
     default:
       response.push(`Unknown Command '${command}'`);

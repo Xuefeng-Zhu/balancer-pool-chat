@@ -42,7 +42,7 @@ const themes = {
 
 export default function App() {
   const [hash] = useHash();
-  const { provider } = useWeb3Context();
+  const { provider, address } = useWeb3Context();
   const [messages, dispatchMessages] = useReducer(reduceMessages, []);
   const [waku, setWaku] = useState<Waku | undefined>(undefined);
   const [nick, setNick] = useState<string>(() => {
@@ -124,6 +124,7 @@ export default function App() {
                 input,
                 waku,
                 provider,
+                address,
                 nick,
                 chatTopic,
                 setNick
