@@ -59,7 +59,7 @@ const POOL_GQL = gql(`
 
 function getBalanceMap(poolData: any) {
   const result: any = {};
-  if (!poolData) {
+  if (!poolData || !poolData.pools[0]) {
     return result;
   }
 
