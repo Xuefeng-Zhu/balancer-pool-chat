@@ -22,7 +22,7 @@ export const NETWORKS = {
     color: '#29b6af',
     chainId: 1,
     rpcUrl:
-      'https://poa-kovan.gateway.pokt.network/v1/lb/61614a8925e510003621d603',
+      'https://eth-trace.gateway.pokt.network/v1/lb/6162655f25e5100036233eb3',
     blockTime: 15000,
   },
   kovan: {

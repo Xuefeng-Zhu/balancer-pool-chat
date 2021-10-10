@@ -11,13 +11,13 @@ import { useAsync } from 'react-use';
 import Web3Modal from 'web3modal';
 
 import {
-  InfuraProvider,
   JsonRpcProvider,
   JsonRpcSigner,
   Web3Provider,
+  Provider,
 } from '@ethersproject/providers';
 
-import { getNetworkById, INFURA_ID } from '../constants';
+import { getNetworkById } from '../constants';
 
 const targetNetworkId = Number(process.env.REACT_APP_NETWORK_ID) || 3;
 
@@ -28,7 +28,7 @@ const web3Modal = new Web3Modal({
 });
 
 interface Web3ContextProps {
-  provider: JsonRpcProvider | undefined;
+  provider: Provider | undefined;
   signer: JsonRpcSigner | undefined;
   network: string;
   address: string;
@@ -117,8 +117,8 @@ export const Web3ContextProvider = ({
   }, [loadWeb3Modal]);
 
   useEffect(() => {
-    const infuraProvider = new InfuraProvider(network, INFURA_ID);
-    setProvider(infuraProvider);
+    const rpcProvider = new JsonRpcProvider(networkObject.rpcUrl);
+    setProvider(rpcProvider);
   }, []);
 
   return (

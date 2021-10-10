@@ -4,6 +4,7 @@ import {
   MessageText,
   MessageList,
 } from '@livechat/ui-kit';
+import { NFTPreview } from '@zoralabs/nft-components';
 import { Message } from '../Message';
 
 interface Props {
@@ -13,6 +14,14 @@ interface Props {
 memo(ChatList);
 
 export default function ChatList(props: Props) {
+  function renderMessage(message: Message) {
+    if (message.payloadAsUtf8 === '1') {
+      return <NFTPreview id="3366" showBids={false} />;
+    }
+
+    return <MessageText>{message.payloadAsUtf8}</MessageText>;
+  }
+
   const renderedMessages = props.messages.map((message) => (
     <LiveMessage
       key={
@@ -26,7 +35,7 @@ export default function ChatList(props: Props) {
       authorName={message.nick}
       date={formatDisplayDate(message)}
     >
-      <MessageText>{message.payloadAsUtf8}</MessageText>
+      {renderMessage(message)}
     </LiveMessage>
   ));
 

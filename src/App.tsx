@@ -1,12 +1,13 @@
 import { useEffect, useReducer, useState } from 'react';
 import { Waku, WakuMessage } from 'js-waku';
 import { useHash } from 'react-use';
+import { generate } from 'server-name-generator';
+import { ThemeProvider } from '@livechat/ui-kit';
+import { Message } from './Message';
 import handleCommand from './command';
 import Room from './components/Room';
 import { WakuContext } from './providers/WakuContext';
-import { ThemeProvider } from '@livechat/ui-kit';
-import { generate } from 'server-name-generator';
-import { Message } from './Message';
+import { useWeb3Context } from './providers/Web3ContextProvider';
 import { initWaku, retrieveStoreMessages, reduceMessages } from './utils/waku';
 import './App.css';
 
@@ -41,6 +42,7 @@ const themes = {
 
 export default function App() {
   const [hash] = useHash();
+  const { provider } = useWeb3Context();
   const [messages, dispatchMessages] = useReducer(reduceMessages, []);
   const [waku, setWaku] = useState<Waku | undefined>(undefined);
   const [nick, setNick] = useState<string>(() => {
@@ -117,8 +119,13 @@ export default function App() {
           <Room
             nick={nick}
             messages={messages}
-            commandHandler={(input: string) => {
-              const { command, response } = handleCommand(input, waku, setNick);
+            commandHandler={async (input: string) => {
+              const { command, response } = await handleCommand(
+                input,
+                waku,
+                provider,
+                setNick
+              );
               const commandMessages = response.map((msg) => {
                 return Message.fromUtf8String(command, msg);
               });

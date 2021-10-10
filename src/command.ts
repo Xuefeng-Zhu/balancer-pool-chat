@@ -1,6 +1,9 @@
 import { multiaddr } from 'multiaddr';
 import PeerId from 'peer-id';
 import { Waku } from 'js-waku';
+import { Provider } from '@ethersproject/providers';
+
+import { getUmbrellaData } from './utils/umbrella';
 
 function help(): string[] {
   return [
@@ -104,11 +107,12 @@ function connections(waku: Waku | undefined): string[] {
   return response;
 }
 
-export default function handleCommand(
+export default async function handleCommand(
   input: string,
   waku: Waku | undefined,
+  provider: Provider | undefined,
   setNick: (nick: string) => void
-): { command: string; response: string[] } {
+): Promise<{ command: string; response: string[] }> {
   let response: string[] = [];
   const args = parseInput(input);
   const command = args.shift()!;
@@ -131,9 +135,13 @@ export default function handleCommand(
     case '/connections':
       connections(waku).map((str) => response.push(str));
       break;
+    case '/umbrella':
+      response.push(await getUmbrellaData(args[0]));
+      break;
     default:
       response.push(`Unknown Command '${command}'`);
   }
+  console.log(provider);
   return { command, response };
 }
 

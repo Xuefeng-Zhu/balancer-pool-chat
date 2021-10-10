@@ -40,18 +40,23 @@ export default function Room(props: Props) {
     }
   }
 
-  let rightIcon = (
-    <Button shape="round" size="large" onClick={loadWeb3Modal}>
+  let rightIcon = [
+    <Button shape="round" size="large" onClick={loadWeb3Modal} key="connect">
       Connect to wallet
-    </Button>
-  );
+    </Button>,
+  ];
 
   if (web3Modal && web3Modal.cachedProvider) {
-    rightIcon = (
-      <Button shape="round" size="large" onClick={logoutOfWeb3Modal}>
+    rightIcon = [
+      <Button
+        shape="round"
+        size="large"
+        onClick={logoutOfWeb3Modal}
+        key="logout"
+      >
         Logout
-      </Button>
-    );
+      </Button>,
+    ];
   }
 
   return (
