@@ -122,7 +122,7 @@ export default function App() {
     return function cleanUp() {
       waku?.relay.deleteObserver(handleRelayMessage, [chatTopic]);
     };
-  }, [waku, historicalMessagesRetrieved, chatTopic]);
+  }, [waku, historicalMessagesRetrieved, chatTopic, balanceMap]);
 
   useEffect(() => {
     if (!waku) return;
@@ -148,7 +148,7 @@ export default function App() {
     };
 
     retrieveMessages();
-  }, [waku, historicalMessagesRetrieved, chatTopic]);
+  }, [waku, historicalMessagesRetrieved, chatTopic, balanceMap]);
 
   if (!poolId) {
     return <PoolList />;
