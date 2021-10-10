@@ -4,7 +4,7 @@ import {
   MessageText,
   MessageList,
 } from '@livechat/ui-kit';
-import { Message } from './Message';
+import { Message } from '../Message';
 
 interface Props {
   messages: Message[];

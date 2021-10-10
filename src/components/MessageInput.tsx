@@ -1,5 +1,5 @@
 import { ChangeEvent, KeyboardEvent, useState } from 'react';
-import { useWaku } from './WakuContext';
+import { useWaku } from '../providers/WakuContext';
 import {
   TextInput,
   TextComposer,

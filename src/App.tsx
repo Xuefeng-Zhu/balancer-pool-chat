@@ -1,12 +1,14 @@
 import { useEffect, useReducer, useState } from 'react';
-import './App.css';
-import { Direction, getBootstrapNodes, Waku, WakuMessage } from 'js-waku';
+import { Waku, WakuMessage } from 'js-waku';
+import { useHash } from 'react-use';
 import handleCommand from './command';
-import Room from './Room';
-import { WakuContext } from './WakuContext';
+import Room from './components/Room';
+import { WakuContext } from './providers/WakuContext';
 import { ThemeProvider } from '@livechat/ui-kit';
 import { generate } from 'server-name-generator';
 import { Message } from './Message';
+import { initWaku, retrieveStoreMessages, reduceMessages } from './utils/waku';
+import './App.css';
 
 const themes = {
   AuthorName: {
@@ -37,49 +39,8 @@ const themes = {
   },
 };
 
-export const ChatContentTopic = '/toy-chat/2/huilong/proto';
-
-async function retrieveStoreMessages(
-  waku: Waku,
-  setArchivedMessages: (value: Message[]) => void
-): Promise<number> {
-  const callback = (wakuMessages: WakuMessage[]): void => {
-    const messages: Message[] = [];
-    wakuMessages
-      .map((wakuMsg) => Message.fromWakuMessage(wakuMsg))
-      .forEach((message) => {
-        if (message) {
-          messages.push(message);
-        }
-      });
-    setArchivedMessages(messages);
-  };
-
-  const startTime = new Date();
-  // Only retrieve a week of history
-  startTime.setTime(Date.now() - 1000 * 60 * 60 * 24 * 7);
-
-  const endTime = new Date();
-
-  try {
-    const res = await waku.store.queryHistory([ChatContentTopic], {
-      pageSize: 5,
-      direction: Direction.FORWARD,
-      timeFilter: {
-        startTime,
-        endTime,
-      },
-      callback,
-    });
-
-    return res.length;
-  } catch (e) {
-    console.log('Failed to retrieve messages', e);
-    return 0;
-  }
-}
-
 export default function App() {
+  const [hash] = useHash();
   const [messages, dispatchMessages] = useReducer(reduceMessages, []);
   const [waku, setWaku] = useState<Waku | undefined>(undefined);
   const [nick, setNick] = useState<string>(() => {
@@ -90,6 +51,8 @@ export default function App() {
     historicalMessagesRetrieved,
     setHistoricalMessagesRetrieved,
   ] = useState(false);
+  const [poolId] = hash.slice(2).split('/');
+  const chatTopic = `/pool-chat/${poolId}`;
 
   useEffect(() => {
     localStorage.setItem('nick', nick);
@@ -114,10 +77,10 @@ export default function App() {
       }
     };
 
-    waku.relay.addObserver(handleRelayMessage, [ChatContentTopic]);
+    waku.relay.addObserver(handleRelayMessage, [chatTopic]);
 
     return function cleanUp() {
-      waku?.relay.deleteObserver(handleRelayMessage, [ChatContentTopic]);
+      waku?.relay.deleteObserver(handleRelayMessage, [chatTopic]);
     };
   }, [waku, historicalMessagesRetrieved]);
 
@@ -130,10 +93,12 @@ export default function App() {
       console.log(`Retrieving archived messages}`);
 
       try {
-        retrieveStoreMessages(waku, dispatchMessages).then((length) => {
-          console.log(`Messages retrieved:`, length);
-          setHistoricalMessagesRetrieved(true);
-        });
+        retrieveStoreMessages(waku, chatTopic, dispatchMessages).then(
+          (length) => {
+            console.log(`Messages retrieved:`, length);
+            setHistoricalMessagesRetrieved(true);
+          }
+        );
       } catch (e) {
         console.log(`Error encountered when retrieving archived messages`, e);
       }
@@ -147,7 +112,7 @@ export default function App() {
       className="chat-app"
       style={{ height: '100vh', width: '100vw', overflow: 'hidden' }}
     >
-      <WakuContext.Provider value={{ waku: waku }}>
+      <WakuContext.Provider value={{ waku, chatTopic }}>
         <ThemeProvider theme={themes}>
           <Room
             nick={nick}
@@ -164,37 +129,4 @@ export default function App() {
       </WakuContext.Provider>
     </div>
   );
-}
-
-async function initWaku(setter: (waku: Waku) => void) {
-  try {
-    const waku = await Waku.create({
-      libp2p: {
-        config: {
-          pubsub: {
-            enabled: true,
-            emitSelf: true,
-          },
-        },
-      },
-      bootstrap: getBootstrapNodes.bind({}, selectFleetEnv()),
-    });
-
-    setter(waku);
-  } catch (e) {
-    console.log('Issue starting waku ', e);
-  }
-}
-
-function selectFleetEnv() {
-  // Works with react-scripts
-  if (process?.env?.NODE_ENV === 'development') {
-    return ['fleets', 'wakuv2.test', 'waku-websocket'];
-  } else {
-    return ['fleets', 'wakuv2.prod', 'waku-websocket'];
-  }
-}
-
-function reduceMessages(state: Message[], newMessages: Message[]) {
-  return state.concat(newMessages);
 }
