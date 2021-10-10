@@ -4,7 +4,9 @@
 
 A ReactJS chat app allows people to chat directly in balancer pool.
 It implements [Waku v2 Toy Chat](https://rfc.vac.dev/spec/22/) protocol.
-A deployed version is available at https://0004v4ougfcucd3duv8klr2n72b6q95onm4bq025deqv1c4em9ui5tg.siasky.net/.
+A deployed version is available at https://0000inn3pkuk67ud88lavlo4nr95jk6ssci9g1mi36p1c4vdn8aud58.siasky.net/#.
+
+Balancer UI integration can be found here https://github.com/Xuefeng-Zhu/frontend-v2
 
 To run a development version locally, do:
 
