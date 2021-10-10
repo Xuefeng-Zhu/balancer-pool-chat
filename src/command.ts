@@ -17,6 +17,7 @@ function help(): string[] {
     '/zora <ZoraId>: Show a Zora NFT',
     '/umbrella <Key>: Check umbrella key',
     '/nftport <QueryTerm>: Get a NFT by query through Nftport',
+    '/livepeer <StreamId>: Show a Livepeer stream',
     '/balances <Address>: Check balances for an address',
     '/help: Display this help',
   ];

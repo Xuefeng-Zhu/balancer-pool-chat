@@ -37,8 +37,8 @@ export async function searchNft(
 
   const chatMessage = ChatMessage.fromZora(
     nick,
-    address,
     selectedResult.token_id,
+    address,
     selectedResult.contract_address
   );
   sendMessage(waku, chatMessage, chatTopic);

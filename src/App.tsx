@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { useEffect, useReducer, useState } from 'react';
 import { Waku, WakuMessage } from 'js-waku';
 import { useHash } from 'react-use';
@@ -122,7 +124,7 @@ export default function App() {
     return function cleanUp() {
       waku?.relay.deleteObserver(handleRelayMessage, [chatTopic]);
     };
-  }, [waku, historicalMessagesRetrieved, chatTopic, balanceMap]);
+  }, [waku, historicalMessagesRetrieved, chatTopic]);
 
   useEffect(() => {
     if (!waku) return;
@@ -148,7 +150,7 @@ export default function App() {
     };
 
     retrieveMessages();
-  }, [waku, historicalMessagesRetrieved, chatTopic, balanceMap]);
+  }, [waku, historicalMessagesRetrieved, chatTopic]);
 
   if (!poolId) {
     return <PoolList />;
