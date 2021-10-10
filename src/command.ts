@@ -126,10 +126,29 @@ function handleZora(
   }
 
   if (!zoraId) {
-    return ['Invalid zoraId'];
+    return ['Please enter zoraId'];
   }
 
   const chatMessage = ChatMessage.fromZora(nick, zoraId);
+  sendMessage(waku, chatMessage, chatTopic);
+  return [];
+}
+
+function handleLivepeer(
+  waku: Waku | undefined,
+  nick: string,
+  chatTopic: string,
+  livepeer: string | undefined
+): string[] {
+  if (!waku) {
+    return ['Waku node is starting'];
+  }
+
+  if (!livepeer) {
+    return ['Please enter livepeer stream id'];
+  }
+
+  const chatMessage = ChatMessage.fromLivepeer(nick, livepeer);
   sendMessage(waku, chatMessage, chatTopic);
   return [];
 }
@@ -170,6 +189,11 @@ export default async function handleCommand(
       break;
     case '/zora':
       handleZora(waku, nick, chatTopic, args.shift()).map((str) =>
+        response.push(str)
+      );
+      break;
+    case '/livepeer':
+      handleLivepeer(waku, nick, chatTopic, args.shift()).map((str) =>
         response.push(str)
       );
       break;

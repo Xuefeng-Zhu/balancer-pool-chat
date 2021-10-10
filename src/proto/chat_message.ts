@@ -10,6 +10,7 @@ export interface ChatMessage {
   payload: Uint8Array;
   zoraId: string;
   nftContract: string;
+  livepeer: string;
 }
 
 const baseChatMessage: object = {
@@ -17,6 +18,7 @@ const baseChatMessage: object = {
   nick: "",
   zoraId: "",
   nftContract: "",
+  livepeer: "",
 };
 
 export const ChatMessage = {
@@ -38,6 +40,9 @@ export const ChatMessage = {
     }
     if (message.nftContract !== "") {
       writer.uint32(42).string(message.nftContract);
+    }
+    if (message.livepeer !== "") {
+      writer.uint32(50).string(message.livepeer);
     }
     return writer;
   },
@@ -64,6 +69,9 @@ export const ChatMessage = {
           break;
         case 5:
           message.nftContract = reader.string();
+          break;
+        case 6:
+          message.livepeer = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -99,6 +107,11 @@ export const ChatMessage = {
     } else {
       message.nftContract = "";
     }
+    if (object.livepeer !== undefined && object.livepeer !== null) {
+      message.livepeer = String(object.livepeer);
+    } else {
+      message.livepeer = "";
+    }
     return message;
   },
 
@@ -113,6 +126,7 @@ export const ChatMessage = {
     message.zoraId !== undefined && (obj.zoraId = message.zoraId);
     message.nftContract !== undefined &&
       (obj.nftContract = message.nftContract);
+    message.livepeer !== undefined && (obj.livepeer = message.livepeer);
     return obj;
   },
 
@@ -142,6 +156,11 @@ export const ChatMessage = {
       message.nftContract = object.nftContract;
     } else {
       message.nftContract = "";
+    }
+    if (object.livepeer !== undefined && object.livepeer !== null) {
+      message.livepeer = object.livepeer;
+    } else {
+      message.livepeer = "";
     }
     return message;
   },

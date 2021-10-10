@@ -6,4 +6,5 @@ message ChatMessage {
   bytes payload = 3;
   string zoraId = 4;
   string nftContract = 5;
+  string livepeer = 6;
 }

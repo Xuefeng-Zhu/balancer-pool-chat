@@ -1,10 +1,14 @@
-import { memo, useEffect, useRef } from 'react';
+import { memo, useEffect, useRef, useState, useCallback } from 'react';
 import {
   Message as LiveMessage,
   MessageText,
   MessageList,
 } from '@livechat/ui-kit';
 import { NFTPreview } from '@zoralabs/nft-components';
+import videojs from 'video.js';
+import 'videojs-contrib-hls';
+import 'video.js/dist/video-js.min.css';
+
 import { Message } from '../Message';
 
 interface Props {
@@ -13,21 +17,60 @@ interface Props {
 
 memo(ChatList);
 
-export default function ChatList(props: Props) {
-  function renderMessage(message: Message) {
-    if (message.zoraId) {
-      return (
-        <NFTPreview
-          id={message.zoraId}
-          contract={message.nftContract}
-          showBids={false}
-        />
-      );
-    }
+function ChatMessage({ message }: { message: Message }) {
+  const [videoEl, setVideoEl] = useState<string>('');
+  const onVideo = useCallback((el) => {
+    setVideoEl(el);
+  }, []);
 
-    return <MessageText>{message.payloadAsUtf8}</MessageText>;
+  useEffect(() => {
+    if (!videoEl) return;
+
+    const player = videojs(videoEl, {
+      autoplay: true,
+      controls: true,
+      sources: [
+        {
+          src: `https://cdn.livepeer.com/hls/${message.livepeer}/index.m3u8`,
+        },
+      ],
+    });
+
+    // player.hlsQualitySelector();
+
+    player.on('error', () => {
+      player.src(`https://cdn.livepeer.com/hls/${message.livepeer}/index.m3u8`);
+    });
+  }, []);
+
+  if (message.livepeer) {
+    return (
+      <div data-vjs-player>
+        <video
+          id="video"
+          ref={onVideo}
+          className="h-full w-full video-js vjs-theme-city"
+          controls
+          playsInline
+        />
+      </div>
+    );
   }
 
+  if (message.zoraId) {
+    return (
+      <NFTPreview
+        id={message.zoraId}
+        contract={message.nftContract}
+        showBids={false}
+      />
+    );
+  }
+
+  return <MessageText>{message.payloadAsUtf8}</MessageText>;
+}
+
+export default function ChatList(props: Props) {
   const renderedMessages = props.messages.map((message) => (
     <LiveMessage
       key={
@@ -41,7 +84,7 @@ export default function ChatList(props: Props) {
       authorName={message.nick}
       date={formatDisplayDate(message)}
     >
-      {renderMessage(message)}
+      <ChatMessage message={message} />
     </LiveMessage>
   ));
 

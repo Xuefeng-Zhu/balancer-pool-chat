@@ -25,6 +25,7 @@ export class ChatMessage {
       payload,
       zoraId: '',
       nftContract: '',
+      livepeer: '',
     });
   }
 
@@ -38,6 +39,21 @@ export class ChatMessage {
       payload,
       zoraId,
       nftContract,
+      livepeer: '',
+    });
+  }
+
+  static fromLivepeer(nick: string, streamId: string): ChatMessage {
+    const timestampNumber = Math.floor(new Date().valueOf() / 1000);
+    const payload = Buffer.from('', 'utf-8');
+
+    return new ChatMessage({
+      timestamp: timestampNumber,
+      nick,
+      payload,
+      zoraId: '',
+      nftContract: '',
+      livepeer: streamId,
     });
   }
 
@@ -72,6 +88,10 @@ export class ChatMessage {
 
   get nftContract(): string {
     return this.proto.nftContract;
+  }
+
+  get livepeer(): string {
+    return this.proto.livepeer;
   }
 
   get payloadAsUtf8(): string {

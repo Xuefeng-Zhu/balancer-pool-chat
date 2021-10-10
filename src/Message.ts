@@ -53,4 +53,8 @@ export class Message {
   get nftContract() {
     return this.chatMessage.nftContract;
   }
+
+  get livepeer() {
+    return this.chatMessage.livepeer;
+  }
 }
