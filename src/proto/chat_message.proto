@@ -5,4 +5,5 @@ message ChatMessage {
   string nick = 2;
   bytes payload = 3;
   string zoraId = 4;
+  string nftContract = 5;
 }

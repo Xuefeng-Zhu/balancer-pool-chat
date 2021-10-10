@@ -24,10 +24,11 @@ export class ChatMessage {
       nick,
       payload,
       zoraId: '',
+      nftContract: '',
     });
   }
 
-  static fromZora(nick: string, zoraId: string): ChatMessage {
+  static fromZora(nick: string, zoraId: string, nftContract = ''): ChatMessage {
     const timestampNumber = Math.floor(new Date().valueOf() / 1000);
     const payload = Buffer.from('', 'utf-8');
 
@@ -36,6 +37,7 @@ export class ChatMessage {
       nick,
       payload,
       zoraId,
+      nftContract,
     });
   }
 
@@ -66,6 +68,10 @@ export class ChatMessage {
 
   get zoraId(): string {
     return this.proto.zoraId;
+  }
+
+  get nftContract(): string {
+    return this.proto.nftContract;
   }
 
   get payloadAsUtf8(): string {

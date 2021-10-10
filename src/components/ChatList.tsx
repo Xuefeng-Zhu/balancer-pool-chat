@@ -16,7 +16,13 @@ memo(ChatList);
 export default function ChatList(props: Props) {
   function renderMessage(message: Message) {
     if (message.zoraId) {
-      return <NFTPreview id={message.zoraId} showBids={false} />;
+      return (
+        <NFTPreview
+          id={message.zoraId}
+          contract={message.nftContract}
+          showBids={false}
+        />
+      );
     }
 
     return <MessageText>{message.payloadAsUtf8}</MessageText>;

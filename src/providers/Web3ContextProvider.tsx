@@ -19,7 +19,7 @@ import {
 
 import { getNetworkById } from '../constants';
 
-const targetNetworkId = Number(process.env.REACT_APP_NETWORK_ID) || 3;
+const targetNetworkId = Number(process.env.REACT_APP_NETWORK_ID) || 42;
 
 const web3Modal = new Web3Modal({
   cacheProvider: true, // optional

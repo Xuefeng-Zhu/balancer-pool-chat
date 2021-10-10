@@ -7,12 +7,17 @@ import { ChatMessage } from './ChatMessage';
 import { sendMessage } from './utils/waku';
 import { getUmbrellaData } from './utils/umbrella';
 import { getPortofolio } from './utils/covalent';
+import { searchNft } from './utils/nftport';
 
 function help(): string[] {
   return [
     '/nick <nickname>: set a new nickname',
     '/info: some information about the node',
     '/connect <Multiaddr>: connect to the given peer',
+    '/zora <ZoraId>: Show a Zora NFT',
+    '/umbrella <Key>: Check umbrella key',
+    '/nftport <QueryTerm>: Get a NFT by query through Nftport',
+    '/balances <Address>: Check balances for an address',
     '/help: Display this help',
   ];
 }
@@ -167,6 +172,10 @@ export default async function handleCommand(
       handleZora(waku, nick, chatTopic, args.shift()).map((str) =>
         response.push(str)
       );
+      break;
+    case '/nftport':
+      const results = await searchNft(waku, nick, chatTopic, args.shift());
+      results.map((str) => response.push(str));
       break;
     case '/balances':
       response.push(await getPortofolio(args[0] || address));

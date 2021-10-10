@@ -49,4 +49,8 @@ export class Message {
   get zoraId() {
     return this.chatMessage.zoraId;
   }
+
+  get nftContract() {
+    return this.chatMessage.nftContract;
+  }
 }
