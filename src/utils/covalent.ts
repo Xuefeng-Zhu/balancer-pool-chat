@@ -11,7 +11,7 @@ export async function getPortofolio(address: string): Promise<string> {
   const { data }: any = res.data;
   const result: string[] = [];
 
-  data.items.map((item: any) => {
+  data.items.forEach((item: any) => {
     result.push(
       `${item.contract_ticker_symbol}: ${utils.formatUnits(
         item.balance,

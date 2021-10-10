@@ -84,7 +84,7 @@ export default function App() {
     return function cleanUp() {
       waku?.relay.deleteObserver(handleRelayMessage, [chatTopic]);
     };
-  }, [waku, historicalMessagesRetrieved]);
+  }, [waku, historicalMessagesRetrieved, chatTopic]);
 
   useEffect(() => {
     if (!waku) return;
@@ -107,7 +107,7 @@ export default function App() {
     };
 
     retrieveMessages();
-  }, [waku, historicalMessagesRetrieved]);
+  }, [waku, historicalMessagesRetrieved, chatTopic]);
 
   return (
     <div

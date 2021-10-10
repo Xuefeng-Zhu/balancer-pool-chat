@@ -119,7 +119,7 @@ export const Web3ContextProvider = ({
   useEffect(() => {
     const rpcProvider = new JsonRpcProvider(networkObject.rpcUrl);
     setProvider(rpcProvider);
-  }, []);
+  }, [networkObject.rpcUrl]);
 
   return (
     <Web3Context.Provider
